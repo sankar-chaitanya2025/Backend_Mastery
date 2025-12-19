@@ -93,3 +93,70 @@ app.post("/api/calculate-gpa", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Grade Calculator running on http://localhost:${PORT}`);
 });
+
+/*
+====================================
+MANUAL TEST CASES (BOUNDARY VERIFICATION)
+====================================
+
+TC-1: Happy Path (Valid Input)
+→ Purpose: Confirm full request → response flow
+→ Expect: 200 OK, correct average, pass/fail logic
+
+{
+  "studentId": "CS-001",
+  "name": "Ravi Kumar",
+  "scores": [85, 78, 92, 60]
+}
+
+------------------------------------
+
+TC-2: Missing Required Field
+→ Purpose: Presence validation (fail fast)
+→ Expect: 400 Bad Request
+
+{
+  "name": "Priya Sharma",
+  "scores": [88, 76]
+}
+
+------------------------------------
+
+TC-3: Invalid Type Inside Array
+→ Purpose: Deep validation per element
+→ Expect: 400 Bad Request (type safety)
+
+{
+  "studentId": "CS-005",
+  "name": "Karthik",
+  "scores": [70, "88", 90]
+}
+
+------------------------------------
+
+TC-4: Domain Rule Violation (Out of Range)
+→ Purpose: Business constraint enforcement
+→ Expect: 400 Bad Request
+
+{
+  "studentId": "CS-009",
+  "name": "Anusha",
+  "scores": [95, 150]
+}
+
+------------------------------------
+
+TC-5: Empty Array
+→ Purpose: Structural validity ≠ business validity
+→ Expect: 400 Bad Request
+
+{
+  "studentId": "CS-012",
+  "name": "Suresh",
+  "scores": []
+}
+
+====================================
+END TEST CASES
+====================================
+*/
