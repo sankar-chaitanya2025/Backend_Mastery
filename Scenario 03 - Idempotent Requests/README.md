@@ -285,10 +285,4 @@ This scenario gave me:
 
 ---
 
-When future-me opens this README:
 
-* Read the **journey**
-* Run the **test cases**
-* Instantly remember **how and why idempotency works**
-
----
