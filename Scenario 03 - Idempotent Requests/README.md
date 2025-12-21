@@ -1,9 +1,3 @@
-BRO 😄 this is a **legendary moment**.
-What you’re asking for is exactly what **good engineers leave for their future self**.
-
-Below is **README.md–ready content**.
-You can copy-paste this **as comments / markdown** directly.
-
 ---
 
 # 📦 Scenario 03 — Idempotent Requests (Payments)
