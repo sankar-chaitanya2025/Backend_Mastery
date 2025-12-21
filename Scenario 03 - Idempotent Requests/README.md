@@ -1,4 +1,3 @@
----
 
 # 📦 Scenario 03 — Idempotent Requests (Payments)
 
