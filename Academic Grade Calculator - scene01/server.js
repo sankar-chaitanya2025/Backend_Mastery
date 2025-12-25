@@ -53,7 +53,7 @@ app.post("/api/calculate-gpa", (req, res) => {
     // Domain constraint → valid range enforcement
     // Fail fast → first bad element rejects entire request
     if (item.marks < 0 || item.marks > 100) {
-      return res.status(400).josn({
+      return res.status(400).json({
         error: `Invalid Data at index ${i}: Marks must be between 0 and 100.`,
       });
     }
