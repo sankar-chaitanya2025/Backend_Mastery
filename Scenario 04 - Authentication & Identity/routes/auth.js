@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const authMiddleware = require("../middleware/auth");
 
 router.post("/signup", async (req, res) => {
   try {
@@ -13,7 +13,7 @@ router.post("/signup", async (req, res) => {
       });
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       return res.status(400).json({
         error: "Make sure password length is above 6 characters",
       });
@@ -36,7 +36,7 @@ router.post("/signup", async (req, res) => {
       message: "User signedup",
     });
   } catch (error) {
-    console.error("error");
+    console.error(error);
     res.status(500).json({
       message: "Internal server error",
     });
@@ -72,6 +72,29 @@ router.post("/signin", async (req, res) => {
       error: "Error occured, please try again",
     });
   }
+});
+
+router.get("/profile", authMiddleware, async (req, res) => {
+  res.json({
+    message: "This is a protected route",
+    userId: req.session.userId,
+  });
+});
+
+router.post("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({
+        message: "Failed to logout",
+      });
+    }
+
+    res.clearCookie("sid");
+
+    return res.status(200).json({
+      message: "Logged out successfully",
+    });
+  });
 });
 
 module.exports = router;

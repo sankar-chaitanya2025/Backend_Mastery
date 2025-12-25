@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const connectDB = require("./db");
+const { connectDB } = require("./db");
 
 const router = express.Router();
 const authRouter = require("./routes/auth");
@@ -13,17 +13,17 @@ app.use(express.json());
 
 app.use(
   session({
-    name: "sid", // cookie name
-    secret: "super-secret-key", // used to sign the cookie
-    resave: false, // don't save unchanged sessions
-    saveUninitialized: false, // don't create empty sessions
+    name: "sid",
+    secret: "super-secret-key",
+    resave: false,
+    saveUninitialized: false,
     store: MongoStore.create({
       mongoUrl: "mongodb://localhost:27017/authdb",
     }),
     cookie: {
-      httpOnly: true, // JS cannot read cookie
-      secure: false, // true only in HTTPS
-      maxAge: 1000 * 60 * 60, // 1 hour
+      httpOnly: true,
+      secure: false,
+      maxAge: 1000 * 60 * 60,
     },
   }),
 );
