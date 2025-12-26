@@ -38,10 +38,6 @@ router.post("/login", async (req, res) => {
     expiresIn: "15m",
   });
 
-  return res.json({
-    accessToken,
-  });
-
   const refreshToken = generateRefreshToken();
 
   await RefreshSession.create({
@@ -52,5 +48,43 @@ router.post("/login", async (req, res) => {
   return res.json({
     accessToken,
     refreshToken,
+  });
+});
+
+router.post("/refresh", async (req, res) => {
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res.status(400).json({
+      error: "Token is missing",
+    });
+  }
+
+  const hashedToken = hashToken(refreshToken);
+  const session = await RefreshSession.findOne({
+    refreshTokenHash: hashedToken,
+  });
+
+  if (!session) {
+    return res.status(401).json({
+      error: "Invalid or reused refresh token. Please login again.",
+    });
+  }
+  await RefreshSession.deleteOne({ _id: session._id });
+
+  const newAccessToken = jwt.sign({ userId: session.userId }, JWT_SECRET, {
+    expiresIn: "15m",
+  });
+
+  const newRefreshToken = generateRefreshToken();
+
+  await RefreshSession.create({
+    userId: session.userId,
+    refreshTokenHash: hashToken(newRefreshToken),
+  });
+
+  return res.json({
+    accessToken: newAccessToken,
+    refreshToken: newRefreshToken,
   });
 });
