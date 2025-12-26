@@ -3,6 +3,8 @@ const router = express.Router();
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const RefreshSession = require("../models/RefreshSession");
+const { generateRefreshToken, hashToken } = require("../utils/crypto");
 
 const JWT_SECRET = "ILOVE100XDEVS";
 
@@ -38,5 +40,17 @@ router.post("/login", async (req, res) => {
 
   return res.json({
     accessToken,
+  });
+
+  const refreshToken = generateRefreshToken();
+
+  await RefreshSession.create({
+    userId: user._id,
+    refreshTokenHash: hashToken(refreshToken),
+  });
+
+  return res.json({
+    accessToken,
+    refreshToken,
   });
 });
