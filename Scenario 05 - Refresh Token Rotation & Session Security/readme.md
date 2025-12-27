@@ -252,4 +252,3 @@ Scenario 05 is complete.
 
 This scenario changed how I think about authentication and session security.
 
-```
