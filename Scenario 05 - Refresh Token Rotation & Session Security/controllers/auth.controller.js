@@ -1,5 +1,3 @@
-const express = require("express");
-const router = express.Router();
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -8,7 +6,7 @@ const { generateRefreshToken, hashToken } = require("../utils/crypto");
 
 const JWT_SECRET = "ILOVE100XDEVS";
 
-router.post("/login", async (req, res) => {
+async function login(req, res) {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -17,10 +15,7 @@ router.post("/login", async (req, res) => {
     });
   }
 
-  const user = await User.findOne({
-    email,
-  });
-
+  const user = await User.findOne({ email });
   if (!user) {
     return res.status(400).json({
       error: "Invalid credentials",
@@ -49,9 +44,9 @@ router.post("/login", async (req, res) => {
     accessToken,
     refreshToken,
   });
-});
+}
 
-router.post("/refresh", async (req, res) => {
+async function refresh(req, res) {
   const { refreshToken } = req.body;
 
   if (!refreshToken) {
@@ -61,6 +56,7 @@ router.post("/refresh", async (req, res) => {
   }
 
   const hashedToken = hashToken(refreshToken);
+
   const session = await RefreshSession.findOne({
     refreshTokenHash: hashedToken,
   });
@@ -70,6 +66,7 @@ router.post("/refresh", async (req, res) => {
       error: "Invalid or reused refresh token. Please login again.",
     });
   }
+
   await RefreshSession.deleteOne({ _id: session._id });
 
   const newAccessToken = jwt.sign({ userId: session.userId }, JWT_SECRET, {
@@ -87,4 +84,38 @@ router.post("/refresh", async (req, res) => {
     accessToken: newAccessToken,
     refreshToken: newRefreshToken,
   });
-});
+}
+
+async function signup(req, res) {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({
+      error: "Email and password required",
+    });
+  }
+
+  const existing = await User.findOne({ email });
+  if (existing) {
+    return res.status(400).json({
+      error: "User already exists",
+    });
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10);
+
+  await User.create({
+    email,
+    passwordHash,
+  });
+
+  return res.status(201).json({
+    message: "User created",
+  });
+}
+
+module.exports = {
+  signup,
+  login,
+  refresh,
+};
